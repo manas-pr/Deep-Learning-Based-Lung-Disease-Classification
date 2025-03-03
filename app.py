@@ -15,6 +15,7 @@ def load_model():
         return None
     try:
         model = tf.keras.models.load_model(model_path)
+        st.write("✅ Model loaded successfully!")
         return model
     except Exception as e:
         st.error(f"⚠️ Error loading model: {str(e)}")
@@ -29,11 +30,20 @@ def predict(image_file, model):
     try:
         img = Image.open(image_file).convert('RGB').resize((224, 224))  # Convert to RGB & resize
         img_array = image.img_to_array(img) / 255.0  # Normalize
-        img_array = np.expand_dims(img_array, axis=0)
-        
-        # Debugging: Print image shape
-        st.write(f"🔍 Processed Image Shape: {img_array.shape}")
-        
+        img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+
+        # **Ensure Input Shape Matches Model**
+        expected_shape = model.input_shape  # Get expected input shape from model
+        st.write(f"🔍 Model expected input shape: {expected_shape}")
+
+        # If the model expects flattened input, reshape accordingly
+        if len(expected_shape) == 2 and expected_shape[1]:  
+            img_array = img_array.reshape(1, -1)  # Flatten the image
+            st.write(f"🔄 Reshaped image to match model input: {img_array.shape}")
+
+        # Debugging: Print actual image shape before prediction
+        st.write(f"📏 Processed Image Shape: {img_array.shape}")
+
         predictions = model.predict(img_array)
         class_names = ["Normal", "Pneumonia", "Tuberculosis", "COVID-19"]  # Modify based on dataset
         results = {class_names[i]: float(predictions[0][i]) for i in range(len(class_names))}
