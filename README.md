@@ -26,4 +26,4 @@ This is a deep learning-based web application that classifies lung diseases from
 Ensure you have a trained deep learning model (`lung_disease_model.h5`) in the project directory.
 
 ## Author
-- **Your Name** - _AI/ML Enthusiast_
+- **Manas Pratim Das** - _AI/ML Enthusiast_
